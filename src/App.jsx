@@ -272,20 +272,13 @@ export default function App() {
             content: [
               {
                 type: "text",
-                text: `Analyze this nutrition facts image and provide detailed information.
+                text: `Analyze this nutrition facts image and provide only important health warnings for elderly users.
 
 ${restrictionsText}
 
 ${mobileInstructions}
 
-Please structure your response as follows:
-
-BASIC FACTS:
-Provide clear, easy-to-read basic nutrition information including:
-- Serving size and calories per serving
-- Key macronutrients (protein, carbs, fat)
-- Important vitamins and minerals
-- Any notable ingredients or additives
+IMPORTANT: Do NOT include basic nutrition facts, calories, or macronutrients. Focus ONLY on health warnings and concerns.
 
 HEALTH WARNINGS:
 Focus on potential health concerns for elderly users:
@@ -294,6 +287,8 @@ Focus on potential health concerns for elderly users:
 - Saturated fat issues
 - Any ingredients that may be problematic for seniors
 - Specific warnings based on the user's dietary restrictions
+- Who should avoid this product
+- Any dangerous ingredients or additives
 
 Create a brief, clear summary (2-3 sentences) that can be read aloud to elderly users, highlighting the most important warnings and recommendations.`
               },
@@ -337,12 +332,9 @@ Create a brief, clear summary (2-3 sentences) that can be read aloud to elderly 
       const fullAnalysis = data?.choices?.[0]?.message?.content?.trim() || "Unable to analyze product";
       console.log("✅ Analysis complete:", fullAnalysis);
 
-      // Split the response into basic facts and warnings
-      const parts = fullAnalysis.split("---WARNINGS---");
-      const basicFactsText = parts[0]?.trim() || "Basic nutrition information not available";
-      const warningsText = parts[1]?.trim() || "No specific warnings identified";
+      // Only use the warnings section, ignore any basic facts
+      const warningsText = fullAnalysis.trim() || "No specific warnings identified";
 
-      setBasicFacts(basicFactsText);
       setImportantWarnings(warningsText);
       setAnalysis(fullAnalysis); // Keep full analysis for reference
       setStep('analysis'); // Switch to analysis step to show results
@@ -617,59 +609,44 @@ Create a brief, clear summary (2-3 sentences) that can be read aloud to elderly 
       )}
 
       {/* ANALYSIS RESULTS */}
-      {step === 'analysis' && basicFacts && (
+      {step === 'analysis' && importantWarnings && (
         <div className="analysis-container">
-          {/* BASIC FACTS - Display prominently */}
-          <div className="basic-facts-box">
-            <h2 className="facts-title">📊 Nutrition Facts:</h2>
-            <p className="facts-text">{basicFacts}</p>
+          {/* IMPORTANT WARNINGS - Only show warnings */}
+          <div className="warnings-box">
+            <div className="warnings-header">
+              <h2 className="warnings-title">⚠️ Health Warnings:</h2>
+              <button className="audio-btn" onClick={speakWarnings} disabled={speaking}>
+                {speaking ? '🔊 Speaking...' : '🔊 Speak Warnings'}
+              </button>
+            </div>
+            <div className="warnings-text">
+              {renderWarningsWithHighlighting()}
+            </div>
           </div>
 
-          {/* IMPORTANT WARNINGS - With audio button */}
-          {importantWarnings && (
-            <div className="warnings-box">
-              <div className="warnings-header">
-                <h3 className="warnings-title">⚠️ Important Health Warnings:</h3>
-                <button
-                  className={`audio-btn ${speaking ? 'speaking' : ''}`}
-                  onClick={speakWarnings}
-                  disabled={speaking}
-                >
-                  {speaking ? '🔊 Speaking...' : '🔊 Listen to Warnings'}
-                </button>
-              </div>
-              <div className="warnings-text">
-                {renderWarningsWithHighlighting()}
-              </div>
-            </div>
-          )}
+          {/* Button Group */}
+          <div className="button-group">
+            <button className="button secondary-btn" onClick={resetAnalysis}>
+              📷 Analyze Another Product
+            </button>
+            <button className="button video-btn" onClick={generateProductVideo} disabled={generating}>
+              {generating ? '🎬 Generating Video...' : '🎬 Generate Video Explanation'}
+            </button>
+          </div>
 
-          {/* VIDEO SECTION */}
+          {/* Video Display */}
           {videoUrl && (
             <div className="video-box">
-              <h3 className="video-title">🎬 Understanding This Product</h3>
-              <p className="video-description">Watch this personalized explanation about the product:</p>
-              <video
-                src={videoUrl}
-                controls
-                className="product-video"
-                style={{ width: '100%', borderRadius: '12px', marginBottom: '15px' }}
-              />
+              <h3 className="video-title">🎥 Product Video Explanation</h3>
+              <p className="video-description">{videoUrl}</p>
+              {videoUrl.startsWith('http') && (
+                <video className="product-video" controls>
+                  <source src={videoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
             </div>
           )}
-
-          <div className="button-group">
-            <button
-              className="button generate-video-btn"
-              onClick={generateProductVideo}
-              disabled={generating || videoUrl}
-            >
-              {generating ? '🎬 Creating Video...' : videoUrl ? '✅ Video Ready' : '🎬 Generate Video Explanation'}
-            </button>
-            <button className="button reset-btn" onClick={resetAnalysis}>
-              🔄 Scan Another Product
-            </button>
-          </div>
         </div>
       )}
     </div>
