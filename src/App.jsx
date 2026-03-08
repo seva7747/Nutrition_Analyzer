@@ -662,6 +662,14 @@ Example format:
       {/* ANALYSIS RESULTS */}
       {step === 'analysis' && importantWarnings && (
         <div className="analysis-container">
+          {/* SHOW NUTRITION IMAGE - Keep photo visible */}
+          {nutritionImage && (
+            <div className="image-container">
+              <p className="image-label">✓ Nutrition Label Analyzed</p>
+              <img src={nutritionImage} alt="Nutrition label" className="preview-img" />
+            </div>
+          )}
+
           {/* IMPORTANT WARNINGS - Only show warnings */}
           <div className="warnings-box">
             <div className="warnings-header">
