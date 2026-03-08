@@ -19,6 +19,11 @@ export default function App() {
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
+  // Check if user is on mobile
+  const isMobileDevice = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+  };
+
   // Quiz states
   const [step, setStep] = useState('quiz'); // quiz, photo, analysis
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -263,9 +268,7 @@ export default function App() {
         ? `IMPORTANT: The user has these dietary restrictions: ${userRestrictions.join(', ')}. Focus heavily on these restrictions in your analysis.`
         : 'The user has no specific dietary restrictions.';
 
-      // Check if user is on mobile
-      const isMobile = window.innerWidth <= 768;
-      const mobileInstructions = isMobile 
+      const mobileInstructions = isMobileDevice() 
         ? 'IMPORTANT: Keep all paragraphs very short (2-3 sentences maximum) for mobile readability. Use bullet points and break up long text into smaller chunks.'
         : '';
 
