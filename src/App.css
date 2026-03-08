@@ -10,7 +10,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background-color: #000000;
+  color: #ffffff;
 }
 
 .container {
@@ -24,18 +25,38 @@ body {
   text-align: center;
   margin-bottom: 30px;
   padding: 20px 0;
+  position: relative;
+}
+
+.refresh-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #333333;
+  color: #ffffff;
+  border: 1px solid #007AFF;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background-color: #007AFF;
+  transform: translateY(-1px);
 }
 
 .header h1 {
   font-size: 48px;
   font-weight: bold;
-  color: #333;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
 .subtitle {
   font-size: 18px;
-  color: #666;
+  color: #cccccc;
   font-style: italic;
 }
 
@@ -46,24 +67,24 @@ body {
 
 /* Instructions */
 .instruction-box {
-  background-color: #e3f2fd;
+  background-color: #1a1a1a;
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 20px;
   border-left: 5px solid #007AFF;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .instruction-text {
   font-size: 22px;
   font-weight: 600;
-  color: #1976d2;
+  color: #ffffff;
   margin-bottom: 20px;
 }
 
 .help-text {
   font-size: 16px;
-  color: #666;
+  color: #cccccc;
   margin-bottom: 15px;
   font-style: italic;
 }
@@ -72,17 +93,19 @@ body {
   width: 100%;
   padding: 15px;
   font-size: 16px;
-  border: 2px solid #ddd;
+  border: 2px solid #444444;
   border-radius: 8px;
   resize: vertical;
   font-family: inherit;
   line-height: 1.4;
+  background-color: #1a1a1a;
+  color: #ffffff;
 }
 
 .text-input:focus {
   outline: none;
   border-color: #007AFF;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3);
 }
 
 /* Buttons */
@@ -154,14 +177,14 @@ body {
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  background-color: #fff;
+  background-color: #1a1a1a;
   border-radius: 12px;
   margin-top: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .spinner {
-  border: 5px solid #f3f3f3;
+  border: 5px solid #333333;
   border-top: 5px solid #007AFF;
   border-radius: 50%;
   width: 50px;
@@ -176,7 +199,7 @@ body {
 
 .loading-text {
   font-size: 18px;
-  color: #007AFF;
+  color: #ffffff;
   margin-top: 20px;
   font-weight: 500;
 }
@@ -187,24 +210,24 @@ body {
 }
 
 .basic-facts-box {
-  background-color: #fff;
+  background-color: #1a1a1a;
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border: 3px solid #007AFF;
 }
 
 .facts-title {
   font-size: 32px;
   font-weight: 700;
-  color: #007AFF;
+  color: #ffffff;
   margin-bottom: 20px;
 }
 
 .facts-text {
   font-size: 24px;
-  color: #333;
+  color: #ffffff;
   line-height: 1.6;
   font-weight: 500;
 }
@@ -217,11 +240,11 @@ body {
 }
 
 .warnings-box {
-  background-color: #fff3cd;
+  background-color: #2d1b1b;
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border: 3px solid #ffc107;
 }
 
@@ -235,7 +258,7 @@ body {
 .warnings-title {
   font-size: 28px;
   font-weight: 700;
-  color: #856404;
+  color: #ffc107;
   margin: 0;
 }
 
@@ -278,7 +301,7 @@ body {
 
 .warnings-text {
   font-size: 20px;
-  color: #333;
+  color: #ffffff;
   line-height: 1.6;
   font-weight: 500;
 }
@@ -288,7 +311,7 @@ body {
   padding: 2px 4px;
   border-radius: 3px;
   font-weight: 700;
-  color: #000;
+  color: #000000;
   animation: highlight 0.5s ease-in-out;
 }
 
@@ -326,24 +349,24 @@ body {
 
 /* Video Section */
 .video-box {
-  background-color: #e8f4f8;
+  background-color: #1a1a1a;
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border: 3px solid #00bcd4;
 }
 
 .video-title {
   font-size: 28px;
   font-weight: 700;
-  color: #00695c;
+  color: #00bcd4;
   margin: 0 0 10px 0;
 }
 
 .video-description {
   font-size: 16px;
-  color: #555;
+  color: #cccccc;
   margin: 0 0 15px 0;
   font-style: italic;
 }
@@ -383,11 +406,11 @@ canvas {
 
 /* Quiz Styles */
 .quiz-container {
-  background-color: #fff;
+  background-color: #1a1a1a;
   border-radius: 12px;
   padding: 30px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border: 3px solid #007AFF;
 }
 
@@ -399,13 +422,13 @@ canvas {
 .quiz-title {
   font-size: 32px;
   font-weight: 700;
-  color: #007AFF;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
 .quiz-subtitle {
   font-size: 18px;
-  color: #666;
+  color: #cccccc;
   font-style: italic;
 }
 
@@ -416,7 +439,7 @@ canvas {
 .progress-bar {
   width: 100%;
   height: 8px;
-  background-color: #e0e0e0;
+  background-color: #333333;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -434,7 +457,7 @@ canvas {
 .question-text {
   font-size: 22px;
   font-weight: 600;
-  color: #333;
+  color: #ffffff;
   margin-bottom: 20px;
   line-height: 1.4;
 }
@@ -449,15 +472,15 @@ canvas {
   display: flex;
   align-items: center;
   padding: 15px;
-  background-color: #f8f9fa;
-  border: 2px solid #e0e0e0;
+  background-color: #2a2a2a;
+  border: 2px solid #444444;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .quiz-option:hover {
-  background-color: #e3f2fd;
+  background-color: #333333;
   border-color: #007AFF;
 }
 
@@ -470,7 +493,7 @@ canvas {
 
 .option-label {
   font-size: 18px;
-  color: #333;
+  color: #ffffff;
   cursor: pointer;
   user-select: none;
 }

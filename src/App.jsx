@@ -421,6 +421,13 @@ SEPARATE the sections with "---WARNINGS---" on a line by itself.`
       <div className="header">
         <h1>📦 Grocery Item Analyzer</h1>
         <p className="subtitle">For Seniors: Get Important Nutrition Information</p>
+        <button 
+          className="refresh-btn" 
+          onClick={() => window.location.reload()}
+          title="Refresh the page"
+        >
+          🔄 Refresh
+        </button>
       </div>
 
       {/* QUIZ SECTION */}
