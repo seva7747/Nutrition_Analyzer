@@ -119,25 +119,113 @@ export default function App() {
     setStep('photo');
   };
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const imageData = event.target?.result;
-      setNutritionImage(imageData);
-      // Only analyze if not already analyzing
-      if (!analyzing) {
-        analyzeGroceryItem(imageData);
-      }
-    };
-    reader.readAsDataURL(file);
+    // Check file size first
+    const fileSizeMB = file.size / 1024 / 1024;
+    console.log(`📸 Original file size: ${fileSizeMB.toFixed(2)}MB`);
+    
+    if (fileSizeMB > 5) {
+      alert(`File too large (${fileSizeMB.toFixed(2)}MB). Please take a photo smaller than 5MB.`);
+      return;
+    }
+
+    try {
+      console.log("📸 Processing image for mobile upload...");
+      console.log(`📸 File details: ${file.name}, size: ${(file.size / 1024 / 1024).toFixed(2)}MB, type: ${file.type}`);
+      
+      // Just use direct file reading with strict size limit
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target.result;
+        const actualSize = imageData.length / 1024 / 1024;
+        console.log(`📸 Direct file size: ${actualSize.toFixed(2)}MB`);
+        
+        // If the original file is already small enough, use it
+        if (actualSize <= 0.5) {
+          console.log("📸 File is small enough, using original");
+          setNutritionImage(imageData);
+          
+          if (!analyzing) {
+            analyzeGroceryItem(imageData);
+          }
+        } else {
+          // File is too large, reject it
+          console.log(`📸 File too large: ${actualSize.toFixed(2)}MB`);
+          alert(`File too large (${actualSize.toFixed(2)}MB). Please take a smaller photo or use a different camera app.`);
+          return;
+        }
+      };
+      
+      reader.onerror = () => {
+        console.error("💀 File reading failed");
+        alert("Failed to read image file. Please try a different photo.");
+      };
+      
+      reader.readAsDataURL(file);
+      
+    } catch (error) {
+      console.error("💀 Image processing failed:", error);
+      alert("Image processing failed. Please try a different photo.");
+      return;
+    }
   };
 
   const fileToBase64 = (dataUrl) => {
     // Extract base64 from data URL
     return dataUrl.split(',')[1];
+  };
+
+  const compressImage = (file, maxWidth = 800, quality = 0.7) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate new dimensions - moderate size
+            let { width, height } = img;
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Fill with white background
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Compress and draw
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Get compressed base64
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+            console.log(`📸 Compressed ${img.naturalWidth}x${img.naturalHeight} to ${width}x${height}, size: ${(compressedDataUrl.length * 0.75 / 1024 / 1024).toFixed(2)}MB`);
+            resolve(compressedDataUrl);
+          } catch (error) {
+            console.error("💀 Canvas compression failed:", error);
+            reject(error);
+          }
+        };
+        img.onerror = () => {
+          console.error("💀 Image loading failed");
+          reject(new Error("Image loading failed"));
+        };
+        img.src = event.target.result;
+      };
+      reader.onerror = () => {
+        console.error("💀 File reading failed");
+        reject(new Error("File reading failed"));
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const analyzeGroceryItem = async (nutritionDataUrl) => {
@@ -153,6 +241,16 @@ export default function App() {
       console.log("🧠 Analyzing grocery item nutrition facts with user restrictions...");
       
       if (!nutritionDataUrl) throw new Error("Failed to process image");
+
+      // Check file size and warn if too large
+      const base64Size = nutritionDataUrl.length / 1024 / 1024; // More accurate calculation
+      const maxSizeMB = 0.8; // 800KB limit for Featherless
+      
+      if (base64Size > maxSizeMB) {
+        console.log(`⚠️ Image still too large: ${base64Size.toFixed(2)}MB`);
+        alert(`Image still too large (${base64Size.toFixed(2)}MB). Please take a smaller photo.`);
+        return;
+      }
 
       // Create personalized prompt based on user restrictions
       const restrictionsText = userRestrictions.length > 0 
@@ -421,13 +519,6 @@ SEPARATE the sections with "---WARNINGS---" on a line by itself.`
       <div className="header">
         <h1>📦 Grocery Item Analyzer</h1>
         <p className="subtitle">For Seniors: Get Important Nutrition Information</p>
-        <button 
-          className="refresh-btn" 
-          onClick={() => window.location.reload()}
-          title="Refresh the page"
-        >
-          🔄 Refresh
-        </button>
       </div>
 
       {/* QUIZ SECTION */}
