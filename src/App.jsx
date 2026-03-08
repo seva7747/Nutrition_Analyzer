@@ -17,6 +17,7 @@ export default function App() {
   const [generating, setGenerating] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
   const [highlightedAreas, setHighlightedAreas] = useState([]);
+  const [activeTab, setActiveTab] = useState('dangers');
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -360,13 +361,8 @@ HIGHLIGHTS: sodium, sugar"`
       setHighlightedAreas(highlightedItems);
       console.log("🎯 Highlighted areas:", highlightedItems);
 
-      // Create highlighted image
-      if (highlightedItems.length > 0) {
-        console.log("🎨 Creating highlighted image...");
-        const highlightedImage = await createHighlightedNutritionImage(nutritionDataUrl, highlightedItems);
-        setNutritionImage(highlightedImage);
-        console.log("✅ Highlighted image created");
-      }
+      // Don't modify the original image - just keep the highlights text
+      console.log("� Problematic areas identified:", highlightedItems);
 
       setImportantWarnings(warningsText);
       setAnalysis(fullAnalysis); // Keep full analysis for reference
@@ -740,43 +736,103 @@ HIGHLIGHTS: sodium, sugar"`
       {/* ANALYSIS RESULTS */}
       {step === 'analysis' && importantWarnings && (
         <div className="analysis-container">
-          {/* SHOW NUTRITION IMAGE - Keep photo visible */}
-          {nutritionImage && (
-            <div className="image-container">
-              <p className="image-label">✓ Nutrition Label Analyzed</p>
-              <img src={nutritionImage} alt="Nutrition label" className="preview-img" />
-              
-              {/* Highlight Legend */}
-              {highlightedAreas.length > 0 && (
-                <div className="highlight-legend">
-                  <p className="legend-title">⚠️ Problematic Areas:</p>
-                  <div className="legend-items">
-                    {highlightedAreas.map((area, index) => (
-                      <span key={index} className="legend-item">
-                        🔴 {area.charAt(0).toUpperCase() + area.slice(1)}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="legend-note">Red areas on the label indicate nutrients that may be harmful for you</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* IMPORTANT WARNINGS - Only show warnings */}
-          <div className="warnings-box">
-            <div className="warnings-header">
-              <h2 className="warnings-title">⚠️ Health Warnings:</h2>
-              <button className="audio-btn" onClick={speakWarnings} disabled={speaking}>
-                {speaking ? '🔊 Speaking...' : '🔊 Speak Warnings'}
-              </button>
-            </div>
-            <div className="warnings-text">
-              {renderWarningsWithHighlighting()}
-            </div>
+          {/* Tab Navigation */}
+          <div className="tab-navigation">
+            <button 
+              className={`tab-btn ${activeTab === 'dangers' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dangers')}
+            >
+              ⚠️ Dangers
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'information' ? 'active' : ''}`}
+              onClick={() => setActiveTab('information')}
+            >
+              ℹ️ Information
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'photo' ? 'active' : ''}`}
+              onClick={() => setActiveTab('photo')}
+            >
+              📷 Photo
+            </button>
           </div>
 
-          {/* Button Group */}
+          {/* Tab Content */}
+          <div className="tab-content">
+            {/* DANGERS TAB */}
+            {activeTab === 'dangers' && (
+              <div className="tab-panel">
+                <div className="warnings-box">
+                  <div className="warnings-header">
+                    <h2 className="warnings-title">⚠️ Health Warnings:</h2>
+                    <button className="audio-btn" onClick={speakWarnings} disabled={speaking}>
+                      {speaking ? '🔊 Speaking...' : '🔊 Speak Warnings'}
+                    </button>
+                  </div>
+                  <div className="warnings-text">
+                    {renderWarningsWithHighlighting()}
+                  </div>
+                </div>
+                
+                {/* Problematic Areas Legend */}
+                {highlightedAreas.length > 0 && (
+                  <div className="highlight-legend">
+                    <p className="legend-title">⚠️ Problematic Areas:</p>
+                    <div className="legend-items">
+                      {highlightedAreas.map((area, index) => (
+                        <span key={index} className="legend-item">
+                          🔴 {area.charAt(0).toUpperCase() + area.slice(1)}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="legend-note">These nutrients may be harmful for your specific health conditions</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* INFORMATION TAB */}
+            {activeTab === 'information' && (
+              <div className="tab-panel">
+                <div className="info-box">
+                  <h2 className="info-title">📊 Product Information</h2>
+                  <div className="info-content">
+                    <p className="info-text">
+                      <strong>Health Analysis Complete</strong><br/>
+                      This product has been analyzed based on your specific dietary restrictions and health conditions.
+                    </p>
+                    <div className="info-details">
+                      <p><strong>Your Restrictions:</strong> {userRestrictions.length > 0 ? userRestrictions.join(', ') : 'None specified'}</p>
+                      <p><strong>Analysis Date:</strong> {new Date().toLocaleDateString()}</p>
+                      <p><strong>Recommendation:</strong> {importantWarnings.includes('avoid') ? 'Consider alternatives' : 'Use in moderation'}</p>
+                    </div>
+                    <div className="audio-section">
+                      <button className="audio-btn large" onClick={speakWarnings} disabled={speaking}>
+                        {speaking ? '🔊 Speaking Analysis...' : '🔊 Speak Full Analysis'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PHOTO TAB */}
+            {activeTab === 'photo' && nutritionImage && (
+              <div className="tab-panel">
+                <div className="photo-tab-container">
+                  <p className="photo-instructions">📱 Swipe to navigate between tabs</p>
+                  <div className="image-container">
+                    <p className="image-label">✓ Nutrition Label Analyzed</p>
+                    <img src={nutritionImage} alt="Nutrition label" className="preview-img" />
+                  </div>
+                  <p className="photo-note">This is the original nutrition label that was analyzed</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Button Group - Show on all tabs */}
           <div className="button-group">
             <button className="button secondary-btn" onClick={resetAnalysis}>
               📷 Analyze Another Product
