@@ -412,6 +412,7 @@ canvas {
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border: 3px solid #007AFF;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .quiz-header {
@@ -452,6 +453,7 @@ canvas {
 
 .quiz-question {
   margin-bottom: 30px;
+  animation: slideIn 0.6s ease-in-out;
 }
 
 .question-text {
@@ -477,11 +479,13 @@ canvas {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  animation: fadeInUp 0.4s ease-in-out;
 }
 
 .quiz-option:hover {
   background-color: #333333;
   border-color: #007AFF;
+  transform: translateY(-2px);
 }
 
 .quiz-option input[type="checkbox"] {
@@ -518,6 +522,40 @@ canvas {
   background-color: #adb5bd;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Quiz Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Prevent zoom on double tap */
