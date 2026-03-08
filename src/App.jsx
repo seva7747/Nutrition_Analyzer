@@ -427,12 +427,25 @@ HIGHLIGHTS: sodium, sugar"`
         });
         
         resolve(canvas.toDataURL('image/jpeg', 0.9));
-      };
       img.src = originalImage;
     });
   };
 
-  
+  // Function to render warnings with highlighting
+  const renderWarningsWithHighlighting = () => {
+    if (!importantWarnings) return null;
+
+    const words = importantWarnings.split(/\s+/);
+    return words.map((word, index) => (
+      <span
+        key={index}
+        className={index === currentWordIndex ? 'highlight-word' : ''}
+      >
+        {word}{' '}
+      </span>
+    ));
+  };
+
   const resetAnalysis = () => {
     setNutritionImage(null);
     setAnalysis(null);
@@ -572,21 +585,7 @@ HIGHLIGHTS: sodium, sugar"`
     }
   };
 
-  // Function to render warnings with highlighting
-  const renderWarningsWithHighlighting = () => {
-    if (!importantWarnings) return null;
-
-    const words = importantWarnings.split(/\s+/);
-    return words.map((word, index) => (
-      <span
-        key={index}
-        className={index === currentWordIndex ? 'highlight-word' : ''}
-      >
-        {word}{' '}
-      </span>
-    ));
-  };
-
+  
   return (
     <div className="container">
       <div className="header">
