@@ -17,7 +17,6 @@ export default function App() {
   const [generating, setGenerating] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
   const [highlightedAreas, setHighlightedAreas] = useState([]);
-  const [activeTab, setActiveTab] = useState('dangers');
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -736,99 +735,43 @@ HIGHLIGHTS: sodium, sugar"`
       {/* ANALYSIS RESULTS */}
       {step === 'analysis' && importantWarnings && (
         <div className="analysis-container">
-          {/* Tab Navigation */}
-          <div className="tab-navigation">
-            <button 
-              className={`tab-btn ${activeTab === 'dangers' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dangers')}
-            >
-              ⚠️ Dangers
-            </button>
-            <button 
-              className={`tab-btn ${activeTab === 'information' ? 'active' : ''}`}
-              onClick={() => setActiveTab('information')}
-            >
-              ℹ️ Information
-            </button>
-            <button 
-              className={`tab-btn ${activeTab === 'photo' ? 'active' : ''}`}
-              onClick={() => setActiveTab('photo')}
-            >
-              📷 Photo
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <div className="tab-content">
-            {/* DANGERS TAB */}
-            {activeTab === 'dangers' && (
-              <div className="tab-panel">
-                {/* Problematic Areas Legend */}
-                {highlightedAreas.length > 0 && (
-                  <div className="highlight-legend">
-                    <p className="legend-title">⚠️ Problematic Areas:</p>
-                    <div className="legend-items">
-                      {highlightedAreas.map((area, index) => (
-                        <span key={index} className="legend-item">
-                          🔴 {area.charAt(0).toUpperCase() + area.slice(1)}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="legend-note">These nutrients may be harmful for your specific health conditions</p>
+          {/* SHOW NUTRITION IMAGE */}
+          {nutritionImage && (
+            <div className="image-container">
+              <p className="image-label">✓ Nutrition Label Analyzed</p>
+              <img src={nutritionImage} alt="Nutrition label" className="preview-img" />
+              
+              {/* Problematic Areas Legend */}
+              {highlightedAreas.length > 0 && (
+                <div className="highlight-legend">
+                  <p className="legend-title">⚠️ Problematic Areas:</p>
+                  <div className="legend-items">
+                    {highlightedAreas.map((area, index) => (
+                      <span key={index} className="legend-item">
+                        🔴 {area.charAt(0).toUpperCase() + area.slice(1)}
+                      </span>
+                    ))}
                   </div>
-                )}
-              </div>
-            )}
-
-            {/* INFORMATION TAB */}
-            {activeTab === 'information' && (
-              <div className="tab-panel">
-                <div className="info-box">
-                  <h2 className="info-title">📊 Product Information</h2>
-                  <div className="info-content">
-                    <p className="info-text">
-                      <strong>Health Analysis Complete</strong><br/>
-                      This product has been analyzed based on your specific dietary restrictions and health conditions.
-                    </p>
-                    <div className="info-details">
-                      <p><strong>Your Restrictions:</strong> {userRestrictions.length > 0 ? userRestrictions.join(', ') : 'None specified'}</p>
-                      <p><strong>Analysis Date:</strong> {new Date().toLocaleDateString()}</p>
-                      <p><strong>Recommendation:</strong> {importantWarnings.includes('avoid') ? 'Consider alternatives' : 'Use in moderation'}</p>
-                    </div>
-                    <div className="warnings-box">
-                      <div className="warnings-header">
-                        <h2 className="warnings-title">⚠️ Health Warnings:</h2>
-                        <button className="audio-btn extra-large" onClick={speakWarnings} disabled={speaking}>
-                          {speaking ? '🔊 Speaking...' : '🔊 Speak Warnings'}
-                        </button>
-                      </div>
-                      <div className="warnings-text">
-                        {renderWarningsWithHighlighting()}
-                      </div>
-                    </div>
-                  </div>
+                  <p className="legend-note">These nutrients may be harmful for your specific health conditions</p>
                 </div>
-            )}
-          </div>
-        </div>
-      )}
+              )}
+            </div>
+          )}
 
-            {/* PHOTO TAB */}
-            {activeTab === 'photo' && nutritionImage && (
-              <div className="tab-panel">
-                <div className="photo-tab-container">
-                  <p className="photo-instructions">📱 Swipe to navigate between tabs</p>
-                  <div className="image-container">
-                    <p className="image-label">✓ Nutrition Label Analyzed</p>
-                    <img src={nutritionImage} alt="Nutrition label" className="preview-img" />
-                  </div>
-                  <p className="photo-note">This is the original nutrition label that was analyzed</p>
-                </div>
-              </div>
-            )}
+          {/* HEALTH WARNINGS */}
+          <div className="warnings-box">
+            <div className="warnings-header">
+              <h2 className="warnings-title">⚠️ Health Warnings:</h2>
+              <button className="audio-btn extra-large" onClick={speakWarnings} disabled={speaking}>
+                {speaking ? '🔊 Speaking...' : '🔊 Speak Warnings'}
+              </button>
+            </div>
+            <div className="warnings-text">
+              {renderWarningsWithHighlighting()}
+            </div>
           </div>
 
-          {/* Button Group - Show on all tabs */}
+          {/* Button Group */}
           <div className="button-group">
             <button className="button secondary-btn" onClick={resetAnalysis}>
               📷 Analyze Another Product
