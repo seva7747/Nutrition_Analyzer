@@ -280,17 +280,18 @@ ${mobileInstructions}
 
 IMPORTANT: Do NOT include basic nutrition facts, calories, or macronutrients. Focus ONLY on health warnings and concerns.
 
-HEALTH WARNINGS:
-Focus on potential health concerns for elderly users:
-- High sodium warnings
-- Sugar content concerns
-- Saturated fat issues
-- Any ingredients that may be problematic for seniors
-- Specific warnings based on the user's dietary restrictions
-- Who should avoid this product
-- Any dangerous ingredients or additives
+CRITICAL REQUIREMENTS:
+- Your response must be EXACTLY 7-10 lines long (no more, no less)
+- Speak directly to the user using "you" and "your"
+- Format as a single paragraph with line breaks
+- Focus on potential health concerns for elderly users
+- Include high sodium warnings, sugar concerns, saturated fat issues
+- Mention specific warnings based on the user's dietary restrictions
+- Tell the user who should avoid this product
+- Highlight any dangerous ingredients or additives
 
-Create a brief, clear summary (2-3 sentences) that can be read aloud to elderly users, highlighting the most important warnings and recommendations.`
+Example format:
+"You should be aware that this product contains high sodium which may affect your blood pressure. The sugar content could be problematic if you have diabetes. If you have heart conditions, the saturated fat content is concerning. Based on your dietary restrictions, you may want to avoid this product. The artificial additives could cause issues for seniors with sensitive digestion. Consider alternatives with lower sodium and sugar content. Always consult your doctor about specific dietary concerns."`
               },
               {
                 type: "image_url",
