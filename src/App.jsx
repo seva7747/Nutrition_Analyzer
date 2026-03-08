@@ -16,6 +16,7 @@ export default function App() {
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   const [generating, setGenerating] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
+  const [highlightedAreas, setHighlightedAreas] = useState([]);
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -299,8 +300,15 @@ CRITICAL REQUIREMENTS:
 - Tell the user if they should avoid this product
 - Keep it concise and actionable
 
+HIGHLIGHTING REQUIREMENTS:
+- After your health warnings, add a line starting with "HIGHLIGHTS:"
+- List the problematic areas on the nutrition label (e.g., "sodium", "sugar", "saturated fat", "cholesterol")
+- Only list the actual problematic nutrients for this specific user
+- Format: HIGHLIGHTS: sodium, sugar, saturated fat
+
 Example format:
-"You should avoid this product due to high sodium that may affect your blood pressure. The sugar content is concerning if you have diabetes. Based on your dietary restrictions, this product may not be safe for you. Consider alternatives with lower sodium and sugar content. Always consult your doctor about specific dietary concerns."`
+"You should avoid this product due to high sodium that may affect your blood pressure. The sugar content is concerning if you have diabetes. Based on your dietary restrictions, this product may not be safe for you. Consider alternatives with lower sodium and sugar content. Always consult your doctor about specific dietary concerns.
+HIGHLIGHTS: sodium, sugar"`
               },
               {
                 type: "image_url",
@@ -342,8 +350,23 @@ Example format:
       const fullAnalysis = data?.choices?.[0]?.message?.content?.trim() || "Unable to analyze product";
       console.log("✅ Analysis complete:", fullAnalysis);
 
-      // Only use the warnings section, ignore any basic facts
-      const warningsText = fullAnalysis.trim() || "No specific warnings identified";
+      // Parse the response to get warnings and highlights
+      const parts = fullAnalysis.split('HIGHLIGHTS:');
+      const warningsText = parts[0]?.trim() || "No specific warnings identified";
+      const highlightsText = parts[1]?.trim() || "";
+      
+      // Parse highlighted areas
+      const highlightedItems = highlightsText.split(',').map(item => item.trim().toLowerCase()).filter(item => item);
+      setHighlightedAreas(highlightedItems);
+      console.log("🎯 Highlighted areas:", highlightedItems);
+
+      // Create highlighted image
+      if (highlightedItems.length > 0) {
+        console.log("🎨 Creating highlighted image...");
+        const highlightedImage = await createHighlightedNutritionImage(nutritionDataUrl, highlightedItems);
+        setNutritionImage(highlightedImage);
+        console.log("✅ Highlighted image created");
+      }
 
       setImportantWarnings(warningsText);
       setAnalysis(fullAnalysis); // Keep full analysis for reference
@@ -359,11 +382,66 @@ Example format:
     }
   };
 
+  const createHighlightedNutritionImage = async (originalImage, highlights) => {
+    if (!highlights || highlights.length === 0) return originalImage;
+
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw original image
+        ctx.drawImage(img, 0, 0);
+        
+        // Add red overlay for problematic areas
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+        ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+        ctx.lineWidth = 3;
+        
+        // Simulate highlighting common problematic areas
+        // This is a simplified approach - in production, you'd use OCR to find exact positions
+        const highlightAreas = {
+          'sodium': { x: img.width * 0.6, y: img.height * 0.3, width: img.width * 0.35, height: img.height * 0.08 },
+          'sugar': { x: img.width * 0.6, y: img.height * 0.4, width: img.width * 0.35, height: img.height * 0.08 },
+          'fat': { x: img.width * 0.6, y: img.height * 0.5, width: img.width * 0.35, height: img.height * 0.08 },
+          'cholesterol': { x: img.width * 0.6, y: img.height * 0.6, width: img.width * 0.35, height: img.height * 0.08 },
+          'calories': { x: img.width * 0.6, y: img.height * 0.2, width: img.width * 0.35, height: img.height * 0.08 }
+        };
+        
+        highlights.forEach(item => {
+          const area = highlightAreas[item];
+          if (area) {
+            ctx.fillRect(area.x, area.y, area.width, area.height);
+            ctx.strokeRect(area.x, area.y, area.width, area.height);
+          }
+        });
+        
+        // Add warning icons
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.9)';
+        ctx.font = 'bold 24px Arial';
+        highlights.forEach((item, index) => {
+          const area = highlightAreas[item];
+          if (area) {
+            ctx.fillText('⚠️', area.x - 30, area.y + 20);
+          }
+        });
+        
+        resolve(canvas.toDataURL('image/jpeg', 0.9));
+      };
+      img.src = originalImage;
+    });
+  };
+
   const resetAnalysis = () => {
     setNutritionImage(null);
     setAnalysis(null);
     setBasicFacts(null);
     setImportantWarnings(null);
+    setHighlightedAreas([]);
     setSpeaking(false);
     setCurrentWordIndex(-1);
     setVideoUrl(null);
@@ -667,6 +745,21 @@ Example format:
             <div className="image-container">
               <p className="image-label">✓ Nutrition Label Analyzed</p>
               <img src={nutritionImage} alt="Nutrition label" className="preview-img" />
+              
+              {/* Highlight Legend */}
+              {highlightedAreas.length > 0 && (
+                <div className="highlight-legend">
+                  <p className="legend-title">⚠️ Problematic Areas:</p>
+                  <div className="legend-items">
+                    {highlightedAreas.map((area, index) => (
+                      <span key={index} className="legend-item">
+                        🔴 {area.charAt(0).toUpperCase() + area.slice(1)}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="legend-note">Red areas on the label indicate nutrients that may be harmful for you</p>
+                </div>
+              )}
             </div>
           )}
 

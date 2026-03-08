@@ -205,6 +205,44 @@ body {
   margin: 0 auto;
 }
 
+.highlight-legend {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #2d1b1b;
+  border-radius: 8px;
+  border: 2px solid #ff4444;
+}
+
+.legend-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff4444;
+  margin-bottom: 10px;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.legend-item {
+  background-color: rgba(255, 68, 68, 0.2);
+  color: #ff6666;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.legend-note {
+  font-size: 12px;
+  color: #cccccc;
+  font-style: italic;
+  margin: 0;
+}
+
 /* Loading */
 .loading-box {
   display: flex;
