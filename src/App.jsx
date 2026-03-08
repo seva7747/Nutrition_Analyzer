@@ -136,28 +136,34 @@ export default function App() {
       console.log("📸 Processing image for mobile upload...");
       console.log(`📸 File details: ${file.name}, size: ${(file.size / 1024 / 1024).toFixed(2)}MB, type: ${file.type}`);
       
-      // Just use direct file reading with strict size limit
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target.result;
-        const actualSize = imageData.length / 1024 / 1024;
-        console.log(`📸 Direct file size: ${actualSize.toFixed(2)}MB`);
-        
-        // Use the file directly - Featherless AI can handle up to 20MB
-        console.log("📸 Using original file for Featherless AI");
-        setNutritionImage(imageData);
-        
-        if (!analyzing) {
-          analyzeGroceryItem(imageData);
-        }
-      };
+      // Try compression first to handle base64 bloat
+      let finalImageData = await compressImage(file, 800, 0.7); // Moderate compression
+      let finalSize = finalImageData.length / 1024 / 1024;
+      console.log(`📸 First compression: ${finalSize.toFixed(2)}MB`);
       
-      reader.onerror = () => {
-        console.error("💀 File reading failed");
-        alert("Failed to read image file. Please try a different photo.");
-      };
+      // If still too large, compress more aggressively
+      if (finalSize > 5) {
+        console.log("📸 Compressing more aggressively...");
+        finalImageData = await compressImage(file, 600, 0.5);
+        finalSize = finalImageData.length / 1024 / 1024;
+        console.log(`📸 Second compression: ${finalSize.toFixed(2)}MB`);
+      }
       
-      reader.readAsDataURL(file);
+      if (finalSize > 3) {
+        console.log("📸 Ultra compression needed...");
+        finalImageData = await compressImage(file, 400, 0.3);
+        finalSize = finalImageData.length / 1024 / 1024;
+        console.log(`📸 Ultra compression: ${finalSize.toFixed(2)}MB`);
+      }
+      
+      console.log(`� Final image ready: ${finalSize.toFixed(2)}MB`);
+      
+      setNutritionImage(finalImageData);
+      
+      // Only analyze if not already analyzing
+      if (!analyzing) {
+        analyzeGroceryItem(finalImageData);
+      }
       
     } catch (error) {
       console.error("💀 Image processing failed:", error);
@@ -235,9 +241,9 @@ export default function App() {
       
       if (!nutritionDataUrl) throw new Error("Failed to process image");
 
-      // Check file size - Featherless AI handles up to 20MB
+      // Check file size - Base64 bloat makes files much larger
       const base64Size = nutritionDataUrl.length / 1024 / 1024;
-      const maxSizeMB = 20; // 20MB limit for Featherless AI
+      const maxSizeMB = 8; // 8MB limit for base64 (accounts for bloat)
       
       if (base64Size > maxSizeMB) {
         console.log(`⚠️ Image too large: ${base64Size.toFixed(2)}MB`);
