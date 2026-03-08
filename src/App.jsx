@@ -432,6 +432,7 @@ HIGHLIGHTS: sodium, sugar"`
     });
   };
 
+  
   const resetAnalysis = () => {
     setNutritionImage(null);
     setAnalysis(null);
@@ -724,12 +725,12 @@ HIGHLIGHTS: sodium, sugar"`
         </div>
       )}
 
-      {/* LOADING INDICATOR */}
+      {/* LOADING STATE */}
       {loading && (
-        <div className="loading-box">
-          <div className="spinner"></div>
-          <p className="loading-text">Analyzing nutrition information...</p>
-          <p className="loading-subtext">This usually takes 20-30 seconds</p>
+        <div className="fullscreen-loading">
+          <div className="fullscreen-spinner"></div>
+          <p className="fullscreen-text">Analyzing nutrition information...</p>
+          <p className="fullscreen-text">This usually takes 20-30 seconds</p>
         </div>
       )}
 
@@ -763,18 +764,6 @@ HIGHLIGHTS: sodium, sugar"`
             {/* DANGERS TAB */}
             {activeTab === 'dangers' && (
               <div className="tab-panel">
-                <div className="warnings-box">
-                  <div className="warnings-header">
-                    <h2 className="warnings-title">⚠️ Health Warnings:</h2>
-                    <button className="audio-btn" onClick={speakWarnings} disabled={speaking}>
-                      {speaking ? '🔊 Speaking...' : '🔊 Speak Warnings'}
-                    </button>
-                  </div>
-                  <div className="warnings-text">
-                    {renderWarningsWithHighlighting()}
-                  </div>
-                </div>
-                
                 {/* Problematic Areas Legend */}
                 {highlightedAreas.length > 0 && (
                   <div className="highlight-legend">
@@ -807,15 +796,23 @@ HIGHLIGHTS: sodium, sugar"`
                       <p><strong>Analysis Date:</strong> {new Date().toLocaleDateString()}</p>
                       <p><strong>Recommendation:</strong> {importantWarnings.includes('avoid') ? 'Consider alternatives' : 'Use in moderation'}</p>
                     </div>
-                    <div className="audio-section">
-                      <button className="audio-btn large" onClick={speakWarnings} disabled={speaking}>
-                        {speaking ? '🔊 Speaking Analysis...' : '🔊 Speak Full Analysis'}
-                      </button>
+                    <div className="warnings-box">
+                      <div className="warnings-header">
+                        <h2 className="warnings-title">⚠️ Health Warnings:</h2>
+                        <button className="audio-btn extra-large" onClick={speakWarnings} disabled={speaking}>
+                          {speaking ? '🔊 Speaking...' : '🔊 Speak Warnings'}
+                        </button>
+                      </div>
+                      <div className="warnings-text">
+                        {renderWarningsWithHighlighting()}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
             )}
+          </div>
+        </div>
+      )}
 
             {/* PHOTO TAB */}
             {activeTab === 'photo' && nutritionImage && (
