@@ -34,7 +34,6 @@ export default function App() {
         { value: 'heart', label: 'Heart conditions (watch sodium/fat)' },
         { value: 'blood_pressure', label: 'High blood pressure (low sodium)' },
         { value: 'cholesterol', label: 'High cholesterol (low saturated fat)' },
-        { value: 'allergies', label: 'Food allergies' },
         { value: 'none', label: 'No health restrictions' }
       ],
       multiple: true
@@ -127,8 +126,9 @@ export default function App() {
     const fileSizeMB = file.size / 1024 / 1024;
     console.log(`📸 Original file size: ${fileSizeMB.toFixed(2)}MB`);
     
-    if (fileSizeMB > 5) {
-      alert(`File too large (${fileSizeMB.toFixed(2)}MB). Please take a photo smaller than 5MB.`);
+    // Featherless AI typically handles up to 20MB for vision models
+    if (fileSizeMB > 20) {
+      alert(`File too large (${fileSizeMB.toFixed(2)}MB). Please take a photo smaller than 20MB.`);
       return;
     }
 
@@ -143,19 +143,12 @@ export default function App() {
         const actualSize = imageData.length / 1024 / 1024;
         console.log(`📸 Direct file size: ${actualSize.toFixed(2)}MB`);
         
-        // If the original file is already small enough, use it
-        if (actualSize <= 0.5) {
-          console.log("📸 File is small enough, using original");
-          setNutritionImage(imageData);
-          
-          if (!analyzing) {
-            analyzeGroceryItem(imageData);
-          }
-        } else {
-          // File is too large, reject it
-          console.log(`📸 File too large: ${actualSize.toFixed(2)}MB`);
-          alert(`File too large (${actualSize.toFixed(2)}MB). Please take a smaller photo or use a different camera app.`);
-          return;
+        // Use the file directly - Featherless AI can handle up to 20MB
+        console.log("📸 Using original file for Featherless AI");
+        setNutritionImage(imageData);
+        
+        if (!analyzing) {
+          analyzeGroceryItem(imageData);
         }
       };
       
@@ -242,13 +235,13 @@ export default function App() {
       
       if (!nutritionDataUrl) throw new Error("Failed to process image");
 
-      // Check file size and warn if too large
-      const base64Size = nutritionDataUrl.length / 1024 / 1024; // More accurate calculation
-      const maxSizeMB = 0.8; // 800KB limit for Featherless
+      // Check file size - Featherless AI handles up to 20MB
+      const base64Size = nutritionDataUrl.length / 1024 / 1024;
+      const maxSizeMB = 20; // 20MB limit for Featherless AI
       
       if (base64Size > maxSizeMB) {
-        console.log(`⚠️ Image still too large: ${base64Size.toFixed(2)}MB`);
-        alert(`Image still too large (${base64Size.toFixed(2)}MB). Please take a smaller photo.`);
+        console.log(`⚠️ Image too large: ${base64Size.toFixed(2)}MB`);
+        alert(`Image too large (${base64Size.toFixed(2)}MB). Please take a smaller photo.`);
         return;
       }
 
