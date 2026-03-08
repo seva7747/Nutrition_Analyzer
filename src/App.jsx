@@ -256,6 +256,12 @@ export default function App() {
         ? `IMPORTANT: The user has these dietary restrictions: ${userRestrictions.join(', ')}. Focus heavily on these restrictions in your analysis.`
         : 'The user has no specific dietary restrictions.';
 
+      // Check if user is on mobile
+      const isMobile = window.innerWidth <= 768;
+      const mobileInstructions = isMobile 
+        ? 'IMPORTANT: Keep all paragraphs very short (2-3 sentences maximum) for mobile readability. Use bullet points and break up long text into smaller chunks.'
+        : '';
+
       const featherlessUrl = `https://api.featherless.ai/v1/chat/completions`;
       
       const requestBody = {
@@ -266,43 +272,42 @@ export default function App() {
             content: [
               {
                 type: "text",
-                text: `You are a nutrition expert helping elderly people understand grocery items. 
+                text: `Analyze this nutrition facts image and provide detailed information.
 
 ${restrictionsText}
 
-The user has provided a photo of the nutrition facts label from a grocery product.
+${mobileInstructions}
 
-Please analyze the image and provide TWO SECTIONS:
+Please structure your response as follows:
 
-SECTION 1 - BASIC FACTS (for display):
-- Product Name and Brand
-- Serving Size and Servings Per Container
-- Calories, Sodium, Sugar, Fiber, Protein
-- Key ingredients that matter for the user's restrictions
+BASIC FACTS:
+Provide clear, easy-to-read basic nutrition information including:
+- Serving size and calories per serving
+- Key macronutrients (protein, carbs, fat)
+- Important vitamins and minerals
+- Any notable ingredients or additives
 
-SECTION 2 - IMPORTANT WARNINGS (for speech only):
-- Health warnings SPECIFIC to user's restrictions (diabetes, heart, allergies, religious, etc.)
-- Allergen information (nuts, dairy, gluten, soy, etc.)
-- Religious dietary compliance (kosher, halal, vegetarian, etc.)
-- Safe consumption guidelines based on restrictions
-- Clear recommendations: SAFE / CAUTION / AVOID for this user
+HEALTH WARNINGS:
+Focus on potential health concerns for elderly users:
+- High sodium warnings
+- Sugar content concerns
+- Saturated fat issues
+- Any ingredients that may be problematic for seniors
+- Specific warnings based on the user's dietary restrictions
 
-Format SECTION 1 as a clean paragraph with bold key information.
-Format SECTION 2 as a spoken script - natural, conversational warnings that would be read aloud to help elderly users understand health concerns.
-
-SEPARATE the sections with "---WARNINGS---" on a line by itself.`
+Create a brief, clear summary (2-3 sentences) that can be read aloud to elderly users, highlighting the most important warnings and recommendations.`
               },
               {
                 type: "image_url",
                 image_url: {
-                  url: nutritionDataUrl
+                  url: `data:image/jpeg;base64,${fileToBase64(nutritionDataUrl)}`
                 }
               }
             ]
           }
         ],
         max_tokens: 1000,
-        temperature: 0.1
+        temperature: 0.7
       };
 
       console.log("📤 Sending request to Featherless AI...");
@@ -403,14 +408,6 @@ SEPARATE the sections with "---WARNINGS---" on a line by itself.`
       console.log("📊 OpenNote response:", data);
       
       if (data.id) {
-        console.log("✅ Video request submitted! Note ID:", data.id);
-        
-        // Show success message and simulate video after delay
-        setTimeout(() => {
-          setVideoUrl('Video request submitted to OpenNote! Processing may take 1-2 minutes.');
-          console.log("✅ Video processing complete");
-          setGenerating(false);
-        }, 2000);
         
       } else {
         throw new Error("Failed to submit video request");
@@ -540,8 +537,12 @@ SEPARATE the sections with "---WARNINGS---" on a line by itself.`
           <div className="quiz-question">
             <h3 className="question-text">{quizQuestions[currentQuestion].question}</h3>
             <div className="quiz-options">
-              {quizQuestions[currentQuestion].options.map((option) => (
-                <label key={option.value} className="quiz-option">
+              {quizQuestions[currentQuestion].options.map((option, index) => (
+                <label 
+                  key={option.value} 
+                  className="quiz-option"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
                   <input
                     type="checkbox"
                     value={option.value}
@@ -611,6 +612,7 @@ SEPARATE the sections with "---WARNINGS---" on a line by itself.`
         <div className="loading-box">
           <div className="spinner"></div>
           <p className="loading-text">Analyzing nutrition information...</p>
+          <p className="loading-subtext">This usually takes 20-30 seconds</p>
         </div>
       )}
 

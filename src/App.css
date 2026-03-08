@@ -406,13 +406,26 @@ canvas {
 
 /* Quiz Styles */
 .quiz-container {
-  background-color: #1a1a1a;
-  border-radius: 12px;
-  padding: 30px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border-radius: 20px;
+  padding: 35px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 122, 255, 0.3);
   border: 3px solid #007AFF;
-  animation: fadeIn 0.5s ease-in-out;
+  animation: slideInScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.quiz-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 122, 255, 0.2), transparent);
+  animation: shimmer 3s infinite;
 }
 
 .quiz-header {
@@ -473,19 +486,37 @@ canvas {
 .quiz-option {
   display: flex;
   align-items: center;
-  padding: 15px;
-  background-color: #2a2a2a;
+  padding: 18px;
+  background: linear-gradient(135deg, #2a2a2a 0%, #333333 100%);
   border: 2px solid #444444;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  animation: fadeInUp 0.4s ease-in-out;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUpStagger 0.5s ease-in-out backwards;
+  position: relative;
+  overflow: hidden;
 }
 
 .quiz-option:hover {
-  background-color: #333333;
+  background: linear-gradient(135deg, #3a3a3a 0%, #444444 100%);
   border-color: #007AFF;
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 122, 255, 0.4);
+}
+
+.quiz-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 122, 255, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.quiz-option:hover::before {
+  left: 100%;
 }
 
 .quiz-option input[type="checkbox"] {
@@ -555,6 +586,37 @@ canvas {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInUpStagger {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
   }
 }
 
