@@ -576,18 +576,56 @@ Example format:
       {/* SELECT NUTRITION PHOTO */}
       {step === 'photo' && !nutritionImage && (
         <div className="instruction-box">
-          <p className="instruction-text">Upload a photo of the Nutrition Facts label</p>
-          <p className="help-text">Take a clear photo of the nutrition information on the back of the product</p>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            style={{ display: 'none' }}
-          />
-          <button className="button primary-btn" onClick={() => fileInputRef.current?.click()}>
-            📂 Choose Nutrition Label Photo
-          </button>
+          <p className="instruction-text">
+            {isMobileDevice() ? 'Take or upload a photo of the Nutrition Facts label' : 'Upload a photo of the Nutrition Facts label'}
+          </p>
+          <p className="help-text">
+            {isMobileDevice() 
+              ? 'Take a clear photo of the nutrition information or choose from your photos' 
+              : 'Take a clear photo of the nutrition information on the back of the product'
+            }
+          </p>
+          
+          {/* Mobile: Camera + Gallery options */}
+          {isMobileDevice() ? (
+            <div className="camera-options">
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
+              <button className="button primary-btn" onClick={() => cameraInputRef.current?.click()}>
+                📸 Take Photo
+              </button>
+              <button className="button secondary-btn" onClick={() => fileInputRef.current?.click()}>
+                🖼️ Choose from Photos
+              </button>
+            </div>
+          ) : (
+            /* Computer: File upload only */
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
+              <button className="button primary-btn" onClick={() => fileInputRef.current?.click()}>
+                📂 Choose Nutrition Label Photo
+              </button>
+            </>
+          )}
         </div>
       )}
 
